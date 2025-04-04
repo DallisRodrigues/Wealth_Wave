@@ -149,12 +149,6 @@ class _HomePageState extends State<HomePage> {
         getTopCompaniesByVolume(); // Get top companies
 
     return Scaffold(
-      // appBar: AppBar(
-
-      //   title: const Text('WealthWave', style: TextStyle(color: Colors.white)),
-      //   backgroundColor: Colors.blueAccent,
-      //   centerTitle: true,
-      // ),
       body: stockData.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -859,121 +853,147 @@ class TopLosingCompaniesChart extends StatelessWidget {
     {'name': 'Coal India', 'lossPercentage': -1.71},
     {'name': 'Tata Steel', 'lossPercentage': -1.96},
     {'name': 'Tata Power', 'lossPercentage': -4.40},
-    {'name': 'Larsen Toubro', 'lossPercentage': -6.00},
+    {'name': 'Larsen & Toubro', 'lossPercentage': -6.00}, // Example of a longer name
   ];
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Top 5 Losing Companies",
-          style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.redAccent),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          height: 300,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black26, blurRadius: 6, offset: Offset(0, 4)),
-            ],
-          ),
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              maxY: topLosingCompanies
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = constraints.maxWidth;
+        double barWidth = screenWidth > 600 ? 50 : 30;
+        double chartHeight = 350; // Increased height for better visibility
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Top 5 Losing Companies",
+              style: TextStyle(
+                  fontSize: 22, // Increased font size for title
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              height: chartHeight,
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black26, blurRadius: 8, offset: Offset(0, 4)),
+                ],
+              ),
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  maxY: topLosingCompanies
                       .map((e) => e['lossPercentage'])
                       .reduce((a, b) => a > b ? a : b) +
-                  5,
-              barTouchData: BarTouchData(
-                touchTooltipData: BarTouchTooltipData(
-                  getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                    return BarTooltipItem(
-                      "${topLosingCompanies[group.x]['name']}\n${rod.toY.toStringAsFixed(2)}%",
-                      const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    );
-                  },
-                ),
-              ),
-              titlesData: FlTitlesData(
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                leftTitles: AxisTitles(
-                  axisNameWidget: const Text("Loss (%)"),
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    getTitlesWidget: (value, meta) {
-                      return Text("${value.toInt()}%",
-                          style: const TextStyle(fontSize: 12));
-                    },
+                      5,
+                  barTouchData: BarTouchData(
+                    touchTooltipData: BarTouchTooltipData(
+                      getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                        return BarTooltipItem(
+                          "${topLosingCompanies[group.x]['name']}\n${rod.toY.toStringAsFixed(2)}%",
+                          const TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.bold),
+                        );
+                      },
+                    ),
                   ),
-                ),
-                bottomTitles: AxisTitles(
-                  axisNameWidget: const Text("Company"),
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    getTitlesWidget: (value, meta) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          topLosingCompanies[value.toInt()]['name'],
-                          textAlign: TextAlign.center,
-                          overflow:
-                              TextOverflow.ellipsis, // Adds "..." to long names
-                          style: const TextStyle(
-                              fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              gridData: FlGridData(
-                  show: true,
-                  drawHorizontalLine: true,
-                  checkToShowHorizontalLine: (value) => value % 10 == 0),
-              barGroups: topLosingCompanies.asMap().entries.map((entry) {
-                int index = entry.key;
-                double loss = entry.value['lossPercentage'];
-
-                return BarChartGroupData(
-                  x: index,
-                  barRods: [
-                    BarChartRodData(
-                      toY: loss,
-                      color: Colors.redAccent,
-                      width: 30,
-                      borderRadius: BorderRadius.circular(6),
-                      gradient: const LinearGradient(
-                        colors: [Colors.red, Colors.orangeAccent],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
+                  titlesData: FlTitlesData(
+                    topTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles:
+                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    leftTitles: AxisTitles(
+                      axisNameWidget: const Text("Loss (%)"),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        getTitlesWidget: (value, meta) {
+                          return Text("${value.toInt()}%",
+                              style:
+                                  const TextStyle(fontSize: 12, color: Colors.black));
+                        },
                       ),
                     ),
-                  ],
-                );
-              }).toList(),
+                    bottomTitles: AxisTitles(
+                      axisNameWidget:
+                          const Text("Company"),
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          String companyName = topLosingCompanies[value.toInt()]['name'];
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(top: 8.0),
+                            child: ConstrainedBox(
+                              constraints:
+                                  BoxConstraints(maxWidth: screenWidth / 5 - 20), // Dynamic width
+                              child: Text(
+                                companyName,
+                                textAlign:
+                                    TextAlign.center,
+                                maxLines: 2,
+                                overflow:
+                                    TextOverflow.ellipsis,
+                                style:
+                                    const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  gridData: FlGridData(
+                      show: true,
+                      drawHorizontalLine: true,
+                      checkToShowHorizontalLine:
+                          (value) => value % 10 == 0),
+                  barGroups:
+                      topLosingCompanies.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    double loss = entry.value['lossPercentage'];
+
+                    return BarChartGroupData(
+                      x: index,
+                      barRods: [
+                        BarChartRodData(
+                          toY: loss,
+                          color:
+                              Colors.redAccent,
+                          width:
+                              barWidth,
+                          borderRadius:
+                              BorderRadius.circular(6),
+                          gradient:
+                              const LinearGradient(
+                            colors:
+                                [Colors.red, Colors.orangeAccent],
+                            begin:
+                                Alignment.bottomCenter,
+                            end:
+                                Alignment.topCenter,
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
-}
-
-//Summary Status of all the companies ( Analysis of the Full Dataset)
+}//Summary Status of all the companies ( Analysis of the Full Dataset)
 class SummaryStats extends StatelessWidget {
   final List<StockData> stockData;
 

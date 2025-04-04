@@ -65,7 +65,7 @@ class AuthService {
 
       return null; // Success
     } on FirebaseAuthException catch (e) {
-       return 'An error occurred: ${e.message}';
+      return 'An error occurred: ${e.message}';
     } catch (e) {
       return 'An unexpected error occurred: $e';
     }
@@ -102,9 +102,9 @@ class AuthService {
       }
 
       return null; // Success
-    }  on FirebaseAuthException catch (e) {
-       return 'An error occurred: ${e.message}';
-    }catch (e) {
+    } on FirebaseAuthException catch (e) {
+      return 'An error occurred: ${e.message}';
+    } catch (e) {
       return 'An unexpected error occurred: $e';
     }
   }
@@ -114,8 +114,8 @@ class AuthService {
     try {
       await _auth.sendPasswordResetEmail(email: email);
       return null; // Success
-    }  on FirebaseAuthException catch (e) {
-       return 'An error occurred: ${e.message}';
+    } on FirebaseAuthException catch (e) {
+      return 'An error occurred: ${e.message}';
     } catch (e) {
       return 'An unexpected error occurred: $e';
     }
@@ -135,8 +135,8 @@ class AuthService {
         'photoUrl': photoUrl,
       });
       return null; // Success
-    }  on FirebaseAuthException catch (e) {
-       return 'An error occurred: ${e.message}';
+    } on FirebaseAuthException catch (e) {
+      return 'An error occurred: ${e.message}';
     } catch (e) {
       return 'An unexpected error occurred: $e';
     }
@@ -144,12 +144,27 @@ class AuthService {
 
   // Sign out function
   Future<void> signOut() async {
-     final GoogleSignIn googleSignIn = GoogleSignIn();
-      try {
-        await googleSignIn.signOut(); // This clears the credentials
-      } catch (error) {
-        print(error);
-      }
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    try {
+      await googleSignIn.signOut(); // This clears the credentials
+    } catch (error) {
+      print(error);
+    }
     await _auth.signOut();
+  }
+
+  // Get user data from Firestore
+  Future<Object?> getUserData() async {
+    final User? user = _auth.currentUser;
+    if (user != null) {
+      final DocumentSnapshot document = await _firestore.collection('users').doc(user.uid).get();
+      if (document.exists) {
+        return document.data();
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 }

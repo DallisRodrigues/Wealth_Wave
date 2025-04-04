@@ -20,6 +20,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isLogin = false; // Added state to toggle between sign-up and login
 
   @override
   void dispose() {
@@ -52,6 +53,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _showVerificationDialog();
       } else {
         // Sign-up failed
+        setState(() => _errorMessage = result);
+      }
+    } catch (e) {
+      setState(() => _errorMessage = "An unexpected error occurred: $e");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _signIn() async {
+    if (_formKey.currentState?.validate() == false) return;
+
+    _formKey.currentState?.save();
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      String? result = await _authService.signInWithEmail(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      if (result == null) {
+        // Sign-in successful, navigate to HomePage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      } else {
+        // Sign-in failed
         setState(() => _errorMessage = result);
       }
     } catch (e) {
@@ -120,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               children: [
                 const SizedBox(height: 40), // Add some space at the top
                 Text(
-                  "Create Account",
+                  _isLogin ? "Welcome Back" : "Create Account",
                   style: GoogleFonts.poppins(
                     color: Colors.white,
                     fontSize: 28,
@@ -129,7 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  "Start your journey with us",
+                  _isLogin ? "Sign in to continue" : "Start your journey with us",
                   style: GoogleFonts.poppins(
                     color: Colors.grey,
                     fontSize: 16,
@@ -140,11 +174,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      _buildInputField(
-                          controller: _nameController,
-                          hintText: "Full Name",
-                          icon: FontAwesomeIcons.user),
-                      const SizedBox(height: 12),
+                      if (!_isLogin) // Show name field only during sign-up
+                        Column(
+                          children: [
+                            _buildInputField(
+                                controller: _nameController,
+                                hintText: "Full Name",
+                                icon: FontAwesomeIcons.user),
+                            const SizedBox(height: 12),
+                          ],
+                        ),
                       _buildInputField(
                           controller: _emailController,
                           hintText: "Email",
@@ -167,7 +206,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       _isLoading
                           ? const CircularProgressIndicator(color: Colors.blue)
-                          : _buildSignUpButton(),
+                          : _buildAuthButton(), // Unified button for sign-up/login
+                      const SizedBox(height: 12),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _isLogin = !_isLogin; // Toggle between login and sign-up
+                          });
+                        },
+                        child: Text(
+                          _isLogin
+                              ? "Don't have an account? Sign up"
+                              : "Already have an account? Log in",
+                          style: const TextStyle(color: Colors.blue),
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       _buildDivider(),
                       const SizedBox(height: 12),
@@ -215,16 +268,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildSignUpButton() {
+  Widget _buildAuthButton() {
     return ElevatedButton(
-      onPressed: _signUp,
+      onPressed: _isLogin ? _signIn : _signUp,
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         minimumSize: const Size(double.infinity, 50),
       ),
-      child: const Text("Sign Up", style: TextStyle(fontSize: 16)),
+      child: Text(_isLogin ? "Login" : "Sign Up", style: const TextStyle(fontSize: 16)),
     );
   }
 
@@ -244,7 +297,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return ElevatedButton.icon(
       onPressed: _signInWithGoogle,
       icon: const Icon(FontAwesomeIcons.google, color: Colors.black),
-      label: const Text("Sign Up with Google",
+      label: const Text("Continue with Google",
           style: TextStyle(color: Colors.black)),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,

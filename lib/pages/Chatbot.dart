@@ -47,14 +47,14 @@ class _StockChatScreenState extends State<StockChatScreen> {
 
   // Finnhub API Key and base URL
   final String _finnhubApiKey =
-      'cunokg1r01qokt72mf00cunokg1r01qokt72mf0g'; // Replace with your Finnhub API Key
+      ''; // Replace with your Finnhub API Key
   final String _baseUrl = 'https://finnhub.io/api/v1/quote';
 
   // Store last known data for each stock symbol
   Map<String, Map<String, dynamic>> lastKnownData = {};
 
   // Gemini setup
-  final String _geminiApiKey = 'AIzaSyD3-XkdWZhHopvyE_eQ3hjz7e5ehJ63Pk0'; // Replace with your Gemini API Key
+  final String _geminiApiKey = ''; // Replace with your Gemini API Key
   late final GenerativeModel _model;
 
   @override

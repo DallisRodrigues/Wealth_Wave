@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -14,7 +15,7 @@ import 'pages/news_page.dart';
 import 'pages/home_page.dart';
 import 'pages/theme_provider.dart';
 import 'pages/Chatbot.dart';
-import 'pages/analysis.dart' ;
+import 'pages/analysis.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +39,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Stock App',
       theme: themeProvider.lightTheme, // Use the lightTheme from ThemeProvider
-      darkTheme: themeProvider.darkTheme, // Use the darkTheme from ThemeProvider
-      themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light, // Use ThemeMode
+      darkTheme:
+          themeProvider.darkTheme, // Use the darkTheme from ThemeProvider
+      themeMode: themeProvider.isDarkMode
+          ? ThemeMode.dark
+          : ThemeMode.light, // Use ThemeMode
       home: const SplashScreen(),
     );
   }
@@ -54,7 +58,8 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         } else if (snapshot.hasData) {
           User? user = snapshot.data;
           if (user != null && !user.emailVerified) {
@@ -120,9 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
     const HomePage(),
     const WatchlistPage(),
     const TrendsPage(),
-     StockChatScreen(),
+    StockChatScreen(),
     const NewsPage(),
-   
   ];
 
   @override
@@ -130,9 +134,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final theme = Theme.of(context); // Access current theme
     return Scaffold(
       appBar: AppBar(
-          title: const Text('WealthWave', style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blueAccent,
-          centerTitle: true,
+        title: const Text('WealthWave', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blueAccent,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -175,9 +179,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.white,
-                      backgroundImage: userPhotoUrl.isNotEmpty ? NetworkImage(userPhotoUrl) : null,
+                      backgroundImage: userPhotoUrl.isNotEmpty
+                          ? NetworkImage(userPhotoUrl)
+                          : null,
                       child: userPhotoUrl.isEmpty
-                          ? const Icon(Icons.account_circle, size: 50, color: Colors.blue)
+                          ? const Icon(Icons.account_circle,
+                              size: 50, color: Colors.blue)
                           : null,
                     ),
                     const SizedBox(height: 6),
@@ -231,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
               _buildDrawerItem(Icons.file_copy, 'Analysis', context, () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) =>  AnalysisScreen()),
+                  MaterialPageRoute(builder: (context) => AnalysisScreen()),
                 );
               }),
               _buildDrawerItem(Icons.info, 'About', context, () {
@@ -240,7 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => const AboutPage()),
                 );
               }),
-              
             ],
           ),
         ),
@@ -249,20 +255,24 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.home)),
           BottomNavigationBarItem(label: 'Watchlist', icon: Icon(Icons.list)),
-          BottomNavigationBarItem(label: 'Search', icon: Icon(Icons.trending_up)),
-          BottomNavigationBarItem(label: 'Chatbot', icon:Icon(Icons.smart_toy)),
-          BottomNavigationBarItem(label: 'News', icon: Icon(Icons.new_releases)),
-        
+          BottomNavigationBarItem(
+              label: 'Search', icon: Icon(Icons.trending_up)),
+          BottomNavigationBarItem(
+              label: 'Chatbot', icon: Icon(Icons.smart_toy)),
+          BottomNavigationBarItem(
+              label: 'News', icon: Icon(Icons.new_releases)),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: theme.primaryColor, // Highlight color for selected icon
+        selectedItemColor:
+            theme.primaryColor, // Highlight color for selected icon
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
   }
 
-  Widget _buildDrawerItem(IconData icon, String title, BuildContext context, [VoidCallback? onTap]) {
+  Widget _buildDrawerItem(IconData icon, String title, BuildContext context,
+      [VoidCallback? onTap]) {
     final theme = Theme.of(context);
     return ListTile(
       leading: Icon(icon, color: theme.iconTheme.color),
@@ -283,32 +293,57 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Verify Your Email")),
+      appBar: AppBar(
+        title: Text(
+          "Verify Your Email",
+          style: GoogleFonts.poppins(fontSize: 18),
+        ),
+      ),
+      backgroundColor: Colors.black,
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "A verification email has been sent to your email address. Please verify before logging in.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
+              textAlign: TextAlign.center, // Corrected here
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 16,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async {
-                User? user = FirebaseAuth.instance.currentUser; // Get the updated user
+                User? user =
+                    FirebaseAuth.instance.currentUser; // Get the updated user
                 await user?.reload();
                 if (user?.emailVerified ?? false) {
                   if (mounted) {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => const MyHomePage()),
+                      MaterialPageRoute(
+                          builder: (context) => const MyHomePage()),
                     );
                   }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Email not verified yet")),
+                  );
                 }
               },
-              child: const Text("I've Verified"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: Text(
+                "I've Verified",
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
@@ -321,7 +356,17 @@ class VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   );
                 }
               },
-              child: const Text("Resend Email"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: Text(
+                "Resend Email",
+                style: const TextStyle(color: Colors.black, fontSize: 16),
+              ),
             ),
           ],
         ),
